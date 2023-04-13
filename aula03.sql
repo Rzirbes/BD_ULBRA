@@ -137,7 +137,7 @@ VALUES
   (8, 5, 3, '2022-03-08', 10, 500.00);
   
   
-select f.nome, p.nome, sum(v.quantidade_vendida) as total_unidade_vendida
+select f.nome as fornecedor, p.nome as produto, sum(v.quantidade_vendida) as total_unidade_vendida
 	from Fornecedor f
     inner join Venda v on f.id = v.id_fornecedor
     inner join Produto p on p.id = v.id_produto
