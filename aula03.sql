@@ -80,69 +80,87 @@ select p.descricao, p.nome, avg(p.preco) as media_valor, sum(v.quantidade) as qu
 group by p.nome
 
 --exercicio 03
+
 -- Cria a tabela Produto
 CREATE TABLE Produto (
-  id INT PRIMARY KEY,
-  nome VARCHAR(50) NOT NULL,
-  descricao TEXT,
-  preco DECIMAL(10,2) NOT NULL,
-  id_fornecedor INT NOT NULL,
-  FOREIGN KEY (id_fornecedor) REFERENCES Fornecedor(id)
+id INT PRIMARY KEY,
+nome VARCHAR(50) NOT NULL,
+descricao TEXT,
+preco DECIMAL(10,2) NOT NULL,
+id_fornecedor INT NOT NULL,
+FOREIGN KEY (id_fornecedor) REFERENCES Fornecedor(id)
 );
 
 -- Cria a tabela Fornecedor
 CREATE TABLE Fornecedor (
-  id INT PRIMARY KEY,
-  nome VARCHAR(50) NOT NULL,
-  cnpj VARCHAR(14) NOT NULL,
-  telefone VARCHAR(20) NOT NULL,
-  email VARCHAR(50) NOT NULL
+id INT PRIMARY KEY,
+nome VARCHAR(50) NOT NULL,
+cnpj VARCHAR(14) NOT NULL,
+telefone VARCHAR(20) NOT NULL,
+email VARCHAR(50) NOT NULL
 );
 
 -- Cria a tabela Venda
 CREATE TABLE Venda (
-  id INT PRIMARY KEY,
-  id_produto INT NOT NULL,
-  id_fornecedor INT NOT NULL,
-  data_venda DATE NOT NULL,
-  quantidade_vendida INT NOT NULL,
-  valor_total DECIMAL(10,2) NOT NULL,
-  FOREIGN KEY (id_produto) REFERENCES Produto(id),
-  FOREIGN KEY (id_fornecedor) REFERENCES Fornecedor(id)
+id INT PRIMARY KEY,
+id_fornecedor INT NOT NULL,
+data_venda DATE NOT NULL,
+valor_total DECIMAL(10,2) NOT NULL,
+FOREIGN KEY (id_fornecedor) REFERENCES Fornecedor(id)
 );
 
+-- Cria a tabela venda_produto
+CREATE TABLE venda_produto (
+id_venda INT NOT NULL,
+id_produto INT NOT NULL,
+quantidade_vendida INT NOT NULL,
+FOREIGN KEY (id_venda) REFERENCES Venda(id),
+FOREIGN KEY (id_produto) REFERENCES Produto(id)
+);
+
+-- Popula a tabela Fornecedor
 INSERT INTO Fornecedor (id, nome, cnpj, telefone, email)
 VALUES
-  (1, 'Fornecedor A', '12345678900001', '(11) 1111-1111', 'fornecedor.a@example.com'),
-  (2, 'Fornecedor B', '12345678900002', '(22) 2222-2222', 'fornecedor.b@example.com'),
-  (3, 'Fornecedor C', '12345678900003', '(33) 3333-3333', 'fornecedor.c@example.com');
-  
+(1, 'Fornecedor 1', '11111111111111', '(11)1111-1111', 'fornecedor1@exemplo.com'),
+(2, 'Fornecedor 2', '22222222222222', '(22)2222-2222', 'fornecedor2@exemplo.com'),
+(3, 'Fornecedor 3', '33333333333333', '(33)3333-3333', 'fornecedor3@exemplo.com');
+
+-- Popula a tabela Produto
 INSERT INTO Produto (id, nome, descricao, preco, id_fornecedor)
 VALUES
-  (1, 'Produto A', 'Descrição do produto A', 10.50, 1),
-  (2, 'Produto B', 'Descrição do produto B', 20.00, 2),
-  (3, 'Produto C', 'Descrição do produto C', 5.99, 1),
-  (4, 'Produto D', 'Descrição do produto D', 100.00, 3),
-  (5, 'Produto E', 'Descrição do produto E', 50.00, 2);
-  
-INSERT INTO Venda (id, id_produto, id_fornecedor, data_venda, quantidade_vendida, valor_total)
+(1, 'Produto 1', 'Descrição do produto 1', 100.00, 1),
+(2, 'Produto 2', 'Descrição do produto 2', 200.00, 1),
+(3, 'Produto 3', 'Descrição do produto 3', 300.00, 2),
+(4, 'Produto 4', 'Descrição do produto 4', 400.00, 2),
+(5, 'Produto 5', 'Descrição do produto 5', 500.00, 3),
+(6, 'Produto 6', 'Descrição do produto 6', 600.00, 3);
+
+-- Popula a tabela Venda
+INSERT INTO Venda (id, id_fornecedor, data_venda, valor_total)
 VALUES
-  (1, 1, 1, '2022-03-01', 50, 525.00),
-  (2, 2, 2, '2022-03-02', 30, 600.00),
-  (3, 3, 1, '2022-03-03', 20, 119.80),
-  (4, 4, 3, '2022-03-04', 150, 15000.00),
-  (5, 5, 2, '2022-03-05', 70, 3500.00),
-  (6, 1, 2, '2022-03-06', 100, 1050.00),
-  (7, 4, 1, '2022-03-07', 80, 8000.00),
-  (8, 5, 3, '2022-03-08', 10, 500.00);
+(1, 1, '2022-03-20', 300.00),
+(2, 2, '2022-03-21', 800.00),
+(3, 3, '2022-03-22', 1500.00);
+
+-- Popula a tabela venda_produto
+INSERT INTO venda_produto (id_venda, id_produto, quantidade_vendida)
+VALUES
+(1, 1, 3),
+(1, 2, 2),
+(2, 3, 2),
+(2, 4, 1),
+(2, 5, 3),
+(3, 5, 2),
+(3, 6, 1);
   
   
-select f.nome as fornecedor, p.nome as produto, sum(v.quantidade_vendida) as total_unidade_vendida
+select f.nome as fornecedor, p.nome as produto, sum(vp.quantidade_vendida) as total_unidade_vendida
 	from Fornecedor f
     inner join Venda v on f.id = v.id_fornecedor
-    inner join Produto p on p.id = v.id_produto
+    inner join venda_produto vp on vp.id_venda = v.id
+    inner join Produto p on p.id = vp.id_produto
 group by f.id, p.id
-having sum(v.quantidade_vendida) >= 100;
+having sum(vp.quantidade_vendida) >= 2;
 
 
 
