@@ -1,0 +1,82 @@
+.
+
+
+use Prison
+switched to db Prison
+Prison> db.createCollection('Prisoners')
+{ ok: 1 }
+Prison>
+
+db.Prisoners.insertMany(
+    [
+        {
+            "DetentoID": 1,
+            "Name": "João Silva",
+            "Block": "A",
+            "Cell": "101"
+        },
+        {
+            "DetentoID": 2,
+            "Name": "Maria Santos",
+            "Block": "B",
+            "Cell": "202"
+        },
+        {
+            "DetentoID": 3,
+            "Name": "Pedro Almeida",
+            "Block": "C",
+            "Cell": "303"
+        }
+    ]
+)
+
+db.Visitors.insertMany(
+    [
+        {
+            "VisitorID": 1,
+            "Name": "Ana Oliveira",
+            "Relationship": "Amiga"
+        },
+        {
+            "VisitorID": 2,
+            "Name": "Carlos Souza",
+            "Relationship": "Parente"
+        },
+        {
+            "VisitorID": 3,
+            "Name": "Juliana Lima",
+            "Relationship": "Amiga"
+        }
+    ]
+)
+
+db.Visits.insertMany(
+    [
+        {
+            "VisitID": 1,
+            "DetaineeID": 1,
+            "VisitorID": 1,
+            "DateOfVisit": "2023-06-01",
+            "EntryTime": "10:00",
+            "ExitTime": "12:00"
+        },
+        {
+            "VisitID": 2,
+            "DetaineeID": 2,
+            "VisitorID": 2,
+            "DateOfVisit": "2023-06-02",
+            "EntryTime": "14:00",
+            "ExitTime": "16:00"
+        },
+        {
+            "VisitID": 3,
+            "DetaineeID": 3,
+            "VisitorID": 3,
+            "DateOfVisit": "2023-06-03",
+            "EntryTime": "16:30",
+            "ExitTime": "18:00"
+        }
+        ]
+)
+
+  
