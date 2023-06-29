@@ -1,0 +1,146 @@
+
+
+//Cliente
+  {
+    "_id": "ID do cliente",
+    "nome": "Nome do cliente",
+    "endereco": "Endereço para entrega",
+    "telefone": "Telefone do cliente"
+  }
+
+ // Pizza
+  {
+    "_id": "ID da pizza",
+    "nome": "Nome da pizza",
+    "tamanho": "Tamanho da pizza",
+    "preco": "Preço da pizza"
+  }
+
+ // Bebida
+  {
+    "_id": "ID da bebida",
+    "nome": "Nome da bebida",
+    "preco": "Preço da bebida"
+  }
+  
+ // Pedido
+  {
+    "_id": "ID do pedido",
+    "clienteId": "ID do cliente associado",
+    "pizzas": [
+      {
+        "pizzaId": "ID da pizza",
+        "quantidade": "Quantidade da pizza"
+      },
+      {
+        "pizzaId": "ID da pizza",
+        "quantidade": "Quantidade da pizza"
+      }
+    ],
+    "bebidas": [
+      {
+        "bebidaId": "ID da bebida",
+        "quantidade": "Quantidade da bebida"
+      },
+      {
+        "bebidaId": "ID da bebida",
+        "quantidade": "Quantidade da bebida"
+      }
+    ],
+    "dataHora": "Data e hora do pedido",
+    "enderecoEntrega": "Endereço para entrega (opcional)",
+    "numeroMesa": "Número da mesa para pedidos no local (opcional)",
+    "total": "Total do pedido"
+  }
+  
+// Criar a coleção "clientes" e inserir um documento
+db.createCollection("clientes")
+db.Cliente.insertOne({ "nome": "João", "endereco": "Rua A, 123", "telefone": "123456789" })
+
+// Criar a coleção "pizzas" e inserir alguns documentos
+db.createCollection("pizzas")
+db.Pizza.insertMany([
+  { "nome": "Margherita", "tamanho": "Média", "preco": 25 },
+  { "nome": "Calabresa", "tamanho": "Grande", "preco": 30 },
+  { "nome": "Quatro Queijos", "tamanho": "Pequena", "preco": 20 }
+])
+
+// Criar a coleção "bebidas" e inserir um documento
+db.createCollection("bebidas")
+db.Bebida.insertOne({ "nome": "Refrigerante", "preco": 5 })
+
+// Criar a coleção "pedidos" e inserir um documento
+db.createCollection("pedidos")
+db.Pedido.insertOne({
+  "clienteId": "ID do cliente",
+  "pizzas": [
+    { "pizzaId": "ID da pizza", "quantidade": 2 },
+    { "pizzaId": "ID da pizza", "quantidade": 1 }
+  ],
+  "bebidas": [
+    { "bebidaId": "ID da bebida", "quantidade": 3 }
+  ],
+  "dataHora": "Data e hora do pedido",
+  "enderecoEntrega": "Endereço para entrega",
+  "numeroMesa": "Número da mesa",
+  "total": 0
+})
+
+//obs(pode escolher se o pedido for Tele ou se for no restaurante)
+
+//UPDATES
+db.Cliente.updateOne({ "_id": ObjectId("ID do cliente") }, { $set: { "endereco": "Nova rua, 123" } })
+//exemplo de exclusão de apenas um documento
+db.Pizza.deleteOne({ "_id": ObjectId("ID da pizza") })
+//exemplo de exclusão de vários documentos
+db.Pedido.deleteMany({ "dataHora": { $lt: ISODate("2023-01-01T00:00:00Z") } }) //excluindo pedidos com data e hora anterior à primeiro de janeiro de 2023
+
+//CONSULTAS
+db.Clientes.find()
+
+db.Pizza.find({ "nome": "Margherita" })//filtra onde o campo "nome" é igual a "margherita"
+
+db.Bebida.find({}, { "nome": 1, "preco": 1 })//consulta com campo para mostrar apenas os nomes e os preços das bebidas
+
+db.Pedido.find({ "total": { $gt: 50 } }) //consulta para retornar os pedidos onde o total foi acima de 50
+
+
+//CONSULTA COM AGREGATE
+
+//   realiza um join entre a coleção "pedidos" e "clientes" com base no campo "clienteId" em "pedidos" e "_id" em "clientes". 
+// Ele retorna os documentos de "pedidos" juntamente com as informações do cliente correspondente. O resultado incluirá um campo "cliente" contendo os dados do cliente.
+db.Pedido.aggregate([
+    {
+      $lookup: {
+        from: "clientes",
+        localField: "clienteId",
+        foreignField: "_id",
+        as: "cliente"
+      }
+    },
+    {
+      $unwind: "$cliente"
+    }
+  ])
+
+//   group by na coleção "pedidos" agrupando os documentos com base no campo "clienteId" e calculando o número total de pedidos para cada cliente. 
+//   O resultado incluirá o ID do cliente (_id) e o total de pedidos (totalPedidos).
+  db.Pedido.aggregate([
+    {
+      $group: {
+        _id: "$clienteId",
+        totalPedidos: { $sum: 1 }
+      }
+    }
+  ])
+  
+
+//   CRIAÇÃO DE INDEX
+db.Pedido.createIndex({ "clienteId": 1 })
+db.Pizza.createIndex({ "nome": 1 })
+db.Pedido.createIndex({ "clienteId": 1, "dataHora": 1 })
+
+//CONSULTAS COM INDEX
+db.Pedido.find({ "clienteId": "ID do cliente" })
+db.Pizza.find({ "nome": "Margherita" })
+

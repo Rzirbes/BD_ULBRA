@@ -1,13 +1,13 @@
 .
 
 
-use Prison
-switched to db Prison
-Prison> db.createCollection('Prisoners')
-{ ok: 1 }
-Prison>
+// use Prison
+// switched to db Prison
+// Prison> db.createCollection('Prisoners')
+// { ok: 1 }
+// Prison>
 
-db.Prisoners.insertMany(
+// db.Prisoners.insertMany(
     [
         {
             "DetentoID": 1,
