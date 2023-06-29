@@ -1,5 +1,5 @@
 
-
+GerenciamentoPizzaria
 //Cliente
   {
     "_id": "ID do cliente",
@@ -100,7 +100,7 @@ db.Clientes.find()
 
 db.Pizza.find({ "nome": "Margherita" })//filtra onde o campo "nome" é igual a "margherita"
 
-db.Bebida.find({}, { "nome": 1, "preco": 1 })//consulta com campo para mostrar apenas os nomes e os preços das bebidas
+db.Bebida.find({}, {"_id": 0, "nome": 1, "preco": 1 })//consulta com campo para mostrar apenas os nomes e os preços das bebidas
 
 db.Pedido.find({ "total": { $gt: 50 } }) //consulta para retornar os pedidos onde o total foi acima de 50
 
@@ -111,15 +111,15 @@ db.Pedido.find({ "total": { $gt: 50 } }) //consulta para retornar os pedidos ond
 // Ele retorna os documentos de "pedidos" juntamente com as informações do cliente correspondente. O resultado incluirá um campo "cliente" contendo os dados do cliente.
 db.Pedido.aggregate([
     {
-      $lookup: {
-        from: "clientes",
-        localField: "clienteId",
-        foreignField: "_id",
-        as: "cliente"
+      "$lookup": {
+        "from": "Clientes",
+        "localField": "clienteId",
+        "foreignField": "_id",
+        "as": "cliente"
       }
     },
     {
-      $unwind: "$cliente"
+      "$unwind": "$cliente"
     }
   ])
 
